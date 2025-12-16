@@ -1,0 +1,40 @@
+/* Hide default cursor */
+body {
+  cursor: none !important;
+}
+
+/* Custom Bird Cursor */
+#custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+
+/* Bird image animations */
+#custom-cursor img {
+  width: 100%;
+  height: 100%;
+  animation: flap 1s infinite alternate, gradientGlow 3s infinite alternate;
+}
+
+/* Flapping motion */
+@keyframes flap {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(5deg); }
+  100% { transform: rotate(-5deg); }
+}
+
+/* Gradient glow */
+@keyframes gradientGlow {
+  0% { filter: drop-shadow(0 0 5px #FAA531); }
+  33% { filter: drop-shadow(0 0 15px #0E41A3); }
+  66% { filter: drop-shadow(0 0 15px #54C083); }
+  100% { filter: drop-shadow(0 0 5px #FAA531); }
+}
+
+
