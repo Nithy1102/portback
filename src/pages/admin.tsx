@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 /* ================= API CONFIG ================= */
-const AUTH_API = "https://port-pp3k.onrender.comapi/admin";
+const AUTH_API = "https://port-pp3k.onrender.com/api/admin";
 const PROJECT_API = "https://port-pp3k.onrender.com/api/projects";
 const IMAGE_BASE = "https://port-pp3k.onrender.com/api/uploads";
 
