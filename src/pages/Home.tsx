@@ -12,7 +12,7 @@ import team3 from "/nithy.jpeg";
 
 /* ================= API ================= */
 const PROJECT_API = "https://port-pp3k.onrender.com/api/projects";
-const IMAGE_BASE = "hhttps://port-pp3k.onrender.com/api/uploads";
+const IMAGE_BASE = "https://port-pp3k.onrender.com/api/uploads";
 
 /* ================= ANIMATIONS ================= */
 const fadeInUp = {
