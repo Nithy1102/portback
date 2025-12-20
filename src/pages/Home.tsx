@@ -10,20 +10,23 @@ import team1 from "/prabu.jpeg";
 import team2 from "/agar.jpeg";
 import team3 from "/nithy.jpeg";
 
+/* ================= MOBILE DETECTOR ================= */
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  return isMobile;
+}
+
 /* ================= API ================= */
 const PROJECT_API = "https://port-pp3k.onrender.com/api/projects";
 const IMAGE_BASE = "https://port-pp3k.onrender.com/api/uploads";
-
-/* ================= ANIMATIONS ================= */
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
-};
 
 /* ================= TYPES ================= */
 type Project = {
@@ -35,6 +38,8 @@ type Project = {
 };
 
 export default function Home() {
+  const isMobile = useIsMobile();
+
   /* ================= TEAM ================= */
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
@@ -91,74 +96,52 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/40 z-[1]" />
 
         <div className="relative z-[2] text-center px-6">
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={staggerContainer}
-            className="flex flex-col items-center"
-          >
-            <motion.span
-              variants={fadeInUp}
-              className="px-3 py-1 mb-5 border border-primary/10
-                         rounded-full bg-primary/10 text-primary uppercase text-sm"
+          <h1 className="text-4xl sm:text-5xl md:text-8xl font-black uppercase mb-8">
+            <span className="block text-white">Smart Solutions.</span>
+            <span className="block text-primary">Real Impact.</span>
+          </h1>
+
+          <p className="max-w-2xl text-base sm:text-lg md:text-xl text-gray-300 mb-10 mx-auto">
+            We build high-performance digital experiences merging futuristic
+            design with cutting-edge tech.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/contact"
+              className="px-8 py-4 border border-primary text-white uppercase font-bold"
             >
-              The Future of Digital
-            </motion.span>
+              Get Started <ChevronRight className="inline ml-2 w-4 h-4" />
+            </Link>
 
-            <motion.h1
-              variants={fadeInUp}
-              className="text-6xl md:text-8xl font-black uppercase mb-8"
+            <Link
+              href="/portfolio"
+              className="px-8 py-4 border border-white/20 bg-white/5 text-white uppercase font-bold"
             >
-              <span className="block text-white">Smart Solutions.</span>
-              <span className="block text-primary">Real Impact.</span>
-            </motion.h1>
-
-            <motion.p
-              variants={fadeInUp}
-              className="max-w-2xl text-xl text-gray-300 mb-10"
-            >
-              We build high-performance digital experiences merging futuristic
-              design with cutting-edge tech.
-            </motion.p>
-
-            <motion.div variants={fadeInUp} className="flex gap-6">
-              <Link
-                href="/contact"
-                className="px-8 py-4 border border-primary text-white uppercase font-bold"
-              >
-                Get Started <ChevronRight className="inline ml-2 w-4 h-4" />
-              </Link>
-
-              <Link
-                href="/portfolio"
-                className="px-8 py-4 border border-white/20 bg-white/5 text-white uppercase font-bold"
-              >
-                View Work
-              </Link>
-            </motion.div>
-          </motion.div>
+              View Work
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* ================= SERVICES ================= */}
-      <section className="py-28 text-white">
+      <section className="py-20 sm:py-28 text-white">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-4xl font-black mb-14 uppercase">
-            Our Services
-          </h2>
+          <h2 className="text-4xl font-black mb-14 uppercase">Our Services</h2>
           <ServicesCarousel />
         </div>
       </section>
 
       {/* ================= TEAM ================= */}
       <section className="py-24 text-white">
-        <div className="container mx-auto px-6 grid md:grid-cols-3 gap-8">
+        <div className="container mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {team.map((m) => (
             <motion.div
               key={m.id}
               layoutId={`card-${m.id}`}
               onClick={() => setSelectedId(m.id)}
-              className="relative h-[400px] cursor-pointer rounded-xl overflow-hidden neon-purple"
+              className="relative h-[320px] sm:h-[400px] cursor-pointer
+                         rounded-xl overflow-hidden neon-purple"
             >
               <motion.img
                 layoutId={`img-${m.id}`}
@@ -174,96 +157,138 @@ export default function Home() {
               </motion.div>
             </motion.div>
           ))}
-        <AnimatePresence>
-                {selectedMember && (
-                  <motion.div
-                    className="fixed inset-0 bg-black/70 backdrop-blur-md z-[9999]
-                               flex justify-center items-center"
-                    onClick={() => setSelectedId(null)}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <motion.div
-                      layoutId={`card-${selectedMember.id}`}
-                      className="popup-grid w-[100vw] h-[100vh] grid gap-4 p-6"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {/* IMAGE */}
-                      <motion.img
-                        layoutId={`img-${selectedMember.id}`}
-                        src={selectedMember.img}
-                        className="div3 rounded-xl w-full h-full object-cover glass-card"
-                      />
-        
-                      {/* NAME */}
-                      <motion.div
-                        layoutId={`info-${selectedMember.id}`}
-                        className="div1 glass-card rounded-xl p-6 text-4xl font-bold neon-purple neon-purple-hover"
-                      >
-                        {selectedMember.name}
-                      </motion.div>
-        
-                      {/* ROLE */}
-                      <div className="div2 glass-card rounded-xl p-6 text-xl text-primary neon-purple neon-purple-hover">
-                        {selectedMember.role}
-                      </div>
-        
-                      {/* EXTRA PANELS */}
-                      <div className="div4 glass-card rounded-xl p-6 neon-purple neon-purple-hover">
-                        Creative Thinker
-                      </div>
-        
-                      <div className="div5 glass-card rounded-xl p-6 neon-purple neon-purple-hover">
-                        {selectedMember.bio}
-                      </div>
-        
-                      <div className="div6 glass-card rounded-xl p-4 neon-purple neon-purple-hover">
-                        Leadership
-                      </div>
-        
-                      <div className="div7 glass-card rounded-xl p-4 neon-purple neon-purple-hover">
-                        Vision
-                      </div>
-        
-                      <div className="div9 glass-card rounded-xl p-4 neon-purple neon-purple-hover">
-                        Strategy
-                      </div>
-        
-                      <div className="div10 glass-card rounded-xl p-4 neon-purple neon-purple-hover">
-                        Experience
-                      </div>
-        
-                      {/* CLOSE */}
-                      <button
-                        className="div11 glass-card rounded-xl flex items-center justify-center
-                                   text-white text-3xl neon-purple neon-purple-hover"
-                        onClick={() => setSelectedId(null)}
-                      >
-                        <X />
-                      </button>
-                    </motion.div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
         </div>
+
+        {/* ================= TEAM POPUP ================= */}
+        <AnimatePresence>
+          {selectedMember && (
+            <motion.div
+              className="fixed inset-0 bg-black/70 z-[9999]"
+              onClick={() => setSelectedId(null)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {/* ===== DESKTOP (GLASS) ===== */}
+              {!isMobile && (
+              <motion.div
+                layoutId={`card-${selectedMember.id}`}
+                className="popup-grid w-[100vw] h-[100vh] grid gap-4 p-6"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <motion.img
+                  layoutId={`img-${selectedMember.id}`}
+                  src={selectedMember.img}
+                  className="div3 rounded-xl w-full h-full object-cover glass-card"
+                />
+
+                <motion.div
+                  layoutId={`info-${selectedMember.id}`}
+                  className="div1 glass-card rounded-xl p-6 text-4xl font-bold neon-purple neon-purple-hover"
+                >
+                  {selectedMember.name}
+                </motion.div>
+
+                <div className="div2 glass-card p-6 text-primary neon-purple neon-purple-hover">
+                  {selectedMember.role}
+                </div>
+
+                <div className="div4 glass-card p-6 neon-purple neon-purple-hover">
+                  Creative Thinker
+                </div>
+
+                <div className="div5 glass-card p-6 neon-purple neon-purple-hover">
+                  {selectedMember.bio}
+                </div>
+
+                <div className="div6 glass-card p-4 neon-purple neon-purple-hover">
+                  Leadership
+                </div>
+
+                <div className="div7 glass-card p-4 neon-purple neon-purple-hover">
+                  Vision
+                </div>
+
+                <div className="div9 glass-card p-4 neon-purple neon-purple-hover">
+                  Strategy
+                </div>
+
+                <div className="div10 glass-card p-4 neon-purple neon-purple-hover">
+                  Experience
+                </div>
+
+                <button
+                  className="div11 glass-card flex items-center justify-center
+                             text-white text-3xl neon-purple neon-purple-hover"
+                  onClick={() => setSelectedId(null)}
+                >
+                  <X />
+                </button>
+              </motion.div>
+            )}
+
+              {/* ===== MOBILE (SAME AS ABOUT US) ===== */}
+              {isMobile && (
+                <motion.div
+                  className="relative w-full h-full bg-black"
+                  onClick={(e) => e.stopPropagation()}
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 40, opacity: 0 }}
+                >
+                  <img
+                    src={selectedMember.img}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+
+                  <div className="absolute bottom-0 left-0 right-0 p-6
+                                  bg-black/80 text-white">
+                    <h2 className="text-xl font-orbitron font-bold text-center">
+                      {selectedMember.name}
+                    </h2>
+
+                    <p className="text-primary text-sm text-center mt-1">
+                      {selectedMember.role}
+                    </p>
+
+                    <p className="text-sm text-gray-300 text-center mt-4">
+                      {selectedMember.bio}
+                    </p>
+
+                    <button
+                      onClick={() => setSelectedId(null)}
+                      className="mt-4 w-full py-2 border border-primary text-primary"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={() => setSelectedId(null)}
+                    className="absolute top-4 right-4 bg-black/70 p-3 rounded-full"
+                  >
+                    <X />
+                  </button>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
-      {/* ================= PROJECTS (HOME) ================= */}
+      {/* ================= PROJECTS ================= */}
       <section className="py-24 text-white">
         <div className="container mx-auto px-6">
-          <h2 className="text-4xl font-black mb-14 uppercase">
-            Our Works
-          </h2>
+          <h2 className="text-4xl font-black mb-14 uppercase">Our Works</h2>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
             {projects.map((p) => (
               <motion.div
                 key={p.id}
                 onClick={() => setSelectedProject(p)}
                 whileHover={{ scale: 1.03 }}
-                className="relative h-[300px] cursor-pointer
-                           rounded-xl overflow-hidden
+                className="relative h-[220px] sm:h-[300px]
+                           cursor-pointer rounded-xl overflow-hidden
                            glass-card neon-purple"
               >
                 {p.image && (
@@ -272,8 +297,6 @@ export default function Home() {
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 )}
-
-                {/* 🔥 OVERLAY MUST NOT BLOCK CLICKS */}
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center pointer-events-none">
                   <h3 className="text-2xl font-bold">{p.title}</h3>
                 </div>
@@ -287,7 +310,7 @@ export default function Home() {
       <AnimatePresence>
         {selectedProject && (
           <motion.div
-            className="fixed inset-0 bg-black/70 backdrop-blur-md z-[9999]
+            className="fixed inset-0 bg-black/70 z-[9999]
                        flex items-center justify-center px-6"
             onClick={() => setSelectedProject(null)}
             initial={{ opacity: 0 }}
@@ -296,16 +319,14 @@ export default function Home() {
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
               className="glass-card neon-purple
-                         max-w-3xl w-full p-8 rounded-2xl relative
-                         pointer-events-auto"
+                         max-w-3xl w-full max-h-[90vh]
+                         overflow-y-auto p-6 sm:p-8
+                         rounded-2xl relative"
             >
               <button
                 onClick={() => setSelectedProject(null)}
-                className="absolute top-4 right-4 text-white/70 hover:text-white"
+                className="absolute top-4 right-4 text-white/70"
               >
                 <X />
               </button>
@@ -313,7 +334,7 @@ export default function Home() {
               {selectedProject.image && (
                 <img
                   src={`${IMAGE_BASE}/${selectedProject.image}`}
-                  className="w-full h-64 object-cover rounded-xl mb-6"
+                  className="w-full h-48 sm:h-64 object-cover rounded-xl mb-6"
                 />
               )}
 
@@ -325,27 +346,21 @@ export default function Home() {
                 {selectedProject.description}
               </p>
 
-           <button
-  onClick={(e) => {
-    e.stopPropagation();
-
-    console.log("OPENING 👉", selectedProject.link);
-
-    if (!selectedProject.link || selectedProject.link.trim() === "") {
-      alert("Project link not set in admin panel");
-      return;
-    }
-
-    window.open(selectedProject.link, "_blank", "noopener,noreferrer");
-  }}
-  className="inline-flex items-center gap-2 px-6 py-3
-             border border-primary rounded-xl
-             neon-purple neon-purple-hover"
->
-  <ExternalLink size={16} />
-  Visit Project
-</button>
-
+              <button
+                onClick={() =>
+                  window.open(
+                    selectedProject.link,
+                    "_blank",
+                    "noopener,noreferrer"
+                  )
+                }
+                className="inline-flex items-center gap-2 px-6 py-3
+                           border border-primary rounded-xl
+                           neon-purple"
+              >
+                <ExternalLink size={16} />
+                Visit Project
+              </button>
             </motion.div>
           </motion.div>
         )}

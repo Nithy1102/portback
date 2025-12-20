@@ -137,7 +137,7 @@ export default function Admin() {
     setProjects(refreshed);
   };
 
-  /* ================= EDIT ================= */
+
   const editProject = (p: Project) => {
     setEditingId(p.id);
     setTitle(p.title);
@@ -147,7 +147,7 @@ export default function Admin() {
     setImage(null);
   };
 
-  /* ================= DELETE ================= */
+
   const deleteProject = async (id: number) => {
     if (!confirm("Delete this project?")) return;
 
@@ -159,7 +159,7 @@ export default function Admin() {
     setProjects((prev) => prev.filter((p) => p.id !== id));
   };
 
-  /* ================= RESET ================= */
+
   const resetForm = () => {
     setEditingId(null);
     setTitle("");
@@ -169,7 +169,7 @@ export default function Admin() {
     setPreview(null);
   };
 
-  /* ================= LOADING ================= */
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-white">

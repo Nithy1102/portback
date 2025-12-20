@@ -46,10 +46,10 @@ export default function PixelLoader({ onComplete }) {
           p.px.style.transform = `translate(${Math.cos(a) * 200}px, ${Math.sin(a) * 200}px)`;
         });
       };
-
+      const isMobile = window.innerWidth <= 768;
       const formText = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.font = "bold 200px Orbitron, sans-serif";
+        ctx.font = isMobile ? "bold 126px Orbitron, sans-serif" : "bold 200px Orbitron, sans-serif";
         ctx.textAlign = "center";
         ctx.fillStyle = "#FFFFFF";
         ctx.fillText("TUTE", img.width / 2, img.height / 2 + 50);

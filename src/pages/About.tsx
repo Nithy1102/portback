@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -7,33 +7,50 @@ import team1 from "/prabu.jpeg";
 import team2 from "/agar.jpeg";
 import team3 from "/nithy.jpeg";
 
+/* ================= MOBILE DETECTOR ================= */
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  return isMobile;
+}
+
 export default function About() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const isMobile = useIsMobile();
 
   const team = [
-  {
-    id: 1,
-    name: "Agaran",
-    role: "Founder & Creative Director",
-    img: team2,
-    bio: "Agaran is the creative force behind the brand, shaping vision, identity, and user experience. With a deep passion for futuristic design and digital storytelling, he pushes boundaries to craft interfaces that feel alive, immersive, and emotionally engaging. His focus is on turning complex ideas into elegant, human-centered experiences."
-  },
-  {
-    id: 2,
-    name: "Prabu Rao",
-    role: "Co-Founder & CEO",
-    img: team1,
-    bio: "Prabu specializes in high-performance system architecture and scalable backend solutions. He ensures that every product is secure, fast, and built to scale. With a strong engineering mindset and problem-solving approach, he bridges the gap between ambitious ideas and reliable execution."
-  },
-  {
-    id: 3,
-    name: "Nithyanantham",
-    role: "Co-Founder & COO",
-    img: team3,
-    bio: "Nithyanantham blends creativity with engineering to build powerful, end-to-end solutions. From interactive frontends to robust backend systems, he focuses on performance, animation, and seamless user interaction. He believes technology should not only work flawlessly but also feel intuitive and inspiring."
-  },
-];
-
+    {
+      id: 1,
+      name: "Agaran",
+      role: "Founder & Creative Director",
+      img: team2,
+      bio:
+        "Agaran is the creative force behind the brand, shaping vision, identity, and user experience.",
+    },
+    {
+      id: 2,
+      name: "Prabu Rao",
+      role: "Co-Founder & CEO",
+      img: team1,
+      bio:
+        "Prabu specializes in high-performance system architecture and scalable backend solutions.",
+    },
+    {
+      id: 3,
+      name: "Nithyanantham",
+      role: "Co-Founder & COO",
+      img: team3,
+      bio:
+        "Nithyanantham blends creativity with engineering to build powerful, end-to-end solutions.",
+    },
+  ];
 
   const selectedMember = team.find((m) => m.id === selectedId);
 
@@ -61,7 +78,7 @@ export default function About() {
           <p className="text-xl text-gray-300 font-rajdhani leading-relaxed">
             Founded in 2025 by{" "}
             <span className="text-white font-medium">
-              Agran, Prabu Rao, and Nithyanantham
+              Agaran, Prabu Rao, and Nithyanantham
             </span>
             , TUTE was created to push digital experiences beyond convention.
           </p>
@@ -122,7 +139,7 @@ export default function About() {
           </ul>
         </section>
 
-        {/* TEAM SECTION */}
+        {/* TEAM */}
         <section className="py-24 text-white">
           <h2 className="text-4xl md:text-5xl font-orbitron font-bold mb-16">
             Meet the <span className="text-primary">Team</span>
@@ -135,7 +152,7 @@ export default function About() {
                 layoutId={`card-${m.id}`}
                 onClick={() => setSelectedId(m.id)}
                 className="relative h-[400px] cursor-pointer rounded-xl overflow-hidden
-                           group neon-purple neon-purple-hover"
+                           neon-purple neon-purple-hover"
               >
                 <motion.img
                   layoutId={`img-${m.id}`}
@@ -157,76 +174,124 @@ export default function About() {
         </section>
       </div>
 
-      {/* ================= TEAM POPUP GRID (FULL) ================= */}
+      {/* ================= POPUP ================= */}
       <AnimatePresence>
         {selectedMember && (
           <motion.div
-            className="fixed inset-0 bg-black/70 backdrop-blur-md z-[9999]
+            className="fixed inset-0 bg-black/70 z-[9999]
                        flex justify-center items-center"
             onClick={() => setSelectedId(null)}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div
-              layoutId={`card-${selectedMember.id}`}
-              className="popup-grid w-[100vw] h-[100vh] grid gap-4 p-6"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* IMAGE */}
-              <motion.img
-                layoutId={`img-${selectedMember.id}`}
-                src={selectedMember.img}
-                className="div3 rounded-xl w-full h-full object-cover glass-card"
-              />
 
-              {/* NAME */}
+            {/* ================= DESKTOP (GLASS ONLY HERE) ================= */}
+            {!isMobile && (
               <motion.div
-                layoutId={`info-${selectedMember.id}`}
-                className="div1 glass-card rounded-xl p-6 text-4xl font-bold neon-purple neon-purple-hover"
+                layoutId={`card-${selectedMember.id}`}
+                className="popup-grid w-[100vw] h-[100vh] grid gap-4 p-6"
+                onClick={(e) => e.stopPropagation()}
               >
-                {selectedMember.name}
+                <motion.img
+                  layoutId={`img-${selectedMember.id}`}
+                  src={selectedMember.img}
+                  className="div3 rounded-xl w-full h-full object-cover glass-card"
+                />
+
+                <motion.div
+                  layoutId={`info-${selectedMember.id}`}
+                  className="div1 glass-card rounded-xl p-6 text-4xl font-bold neon-purple neon-purple-hover"
+                >
+                  {selectedMember.name}
+                </motion.div>
+
+                <div className="div2 glass-card p-6 text-primary neon-purple neon-purple-hover">
+                  {selectedMember.role}
+                </div>
+
+                <div className="div4 glass-card p-6 neon-purple neon-purple-hover">
+                  Creative Thinker
+                </div>
+
+                <div className="div5 glass-card p-6 neon-purple neon-purple-hover">
+                  {selectedMember.bio}
+                </div>
+
+                <div className="div6 glass-card p-4 neon-purple neon-purple-hover">
+                  Leadership
+                </div>
+
+                <div className="div7 glass-card p-4 neon-purple neon-purple-hover">
+                  Vision
+                </div>
+
+                <div className="div9 glass-card p-4 neon-purple neon-purple-hover">
+                  Strategy
+                </div>
+
+                <div className="div10 glass-card p-4 neon-purple neon-purple-hover">
+                  Experience
+                </div>
+
+                <button
+                  className="div11 glass-card flex items-center justify-center
+                             text-white text-3xl neon-purple neon-purple-hover"
+                  onClick={() => setSelectedId(null)}
+                >
+                  <X />
+                </button>
               </motion.div>
+            )}
 
-              {/* ROLE */}
-              <div className="div2 glass-card rounded-xl p-6 text-xl text-primary neon-purple neon-purple-hover">
-                {selectedMember.role}
-              </div>
-
-              {/* EXTRA PANELS */}
-              <div className="div4 glass-card rounded-xl p-6 neon-purple neon-purple-hover">
-                Creative Thinker
-              </div>
-
-              <div className="div5 glass-card rounded-xl p-6 neon-purple neon-purple-hover">
-                {selectedMember.bio}
-              </div>
-
-              <div className="div6 glass-card rounded-xl p-4 neon-purple neon-purple-hover">
-                Leadership
-              </div>
-
-              <div className="div7 glass-card rounded-xl p-4 neon-purple neon-purple-hover">
-                Vision
-              </div>
-
-              <div className="div9 glass-card rounded-xl p-4 neon-purple neon-purple-hover">
-                Strategy
-              </div>
-
-              <div className="div10 glass-card rounded-xl p-4 neon-purple neon-purple-hover">
-                Experience
-              </div>
-
-              {/* CLOSE */}
-              <button
-                className="div11 glass-card rounded-xl flex items-center justify-center
-                           text-white text-3xl neon-purple neon-purple-hover"
-                onClick={() => setSelectedId(null)}
+            {/* ================= MOBILE (NO GLASS, FULL IMAGE) ================= */}
+            {isMobile && (
+              <motion.div
+                className="relative w-full h-full bg-black"
+                onClick={(e) => e.stopPropagation()}
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 40, opacity: 0 }}
               >
-                <X />
-              </button>
-            </motion.div>
+                {/* FULL IMAGE */}
+                <img
+                  src={selectedMember.img}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+
+                {/* SOLID CONTENT (NO GLASS) */}
+                <div className="absolute bottom-0 left-0 right-0 p-6
+                                bg-black/80 text-white">
+                  <h2 className="text-xl font-orbitron font-bold text-center">
+                    {selectedMember.name}
+                  </h2>
+
+                  <p className="text-primary text-sm text-center mt-1">
+                    {selectedMember.role}
+                  </p>
+
+                  <p className="text-sm text-gray-300 text-center mt-4">
+                    {selectedMember.bio}
+                  </p>
+
+                  <button
+                    onClick={() => setSelectedId(null)}
+                    className="mt-4 w-full py-2 border border-primary text-primary"
+                  >
+                    Close
+                  </button>
+                </div>
+
+                {/* CLOSE ICON */}
+                <button
+                  onClick={() => setSelectedId(null)}
+                  className="absolute top-4 right-4 bg-black/70 p-3 rounded-full"
+                >
+                  <X />
+                </button>
+              </motion.div>
+            )}
+
           </motion.div>
         )}
       </AnimatePresence>

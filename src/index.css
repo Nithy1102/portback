@@ -198,7 +198,6 @@
 }
 
 .popup-grid {
-  display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   height: 100vh;
@@ -247,3 +246,18 @@
 .transform-style-preserve-3d {
   transform-style: preserve-3d;
 }
+
+/* 🔴 Disable custom cursor on mobile & touch devices */
+@media (hover: none), (pointer: coarse) {
+  /* Restore normal cursor */
+  * {
+    cursor: auto !important;
+  }
+
+  /* Hide custom cursor elements */
+  #custom-cursor,
+  #cursor-trail {
+    display: none !important;
+  }
+}
+
