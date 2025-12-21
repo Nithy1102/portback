@@ -6,7 +6,7 @@ import { Link } from "wouter";
 import LiquidChrome from "../components/LiquidEther";
 import ServicesCarousel from "../components/ServicesCarousel";
 
-import team1 from "/prabu.jpeg";
+import team1 from "/rao.jpeg";
 import team2 from "/agar.jpeg";
 import team3 from "/nithy.jpeg";
 
@@ -54,14 +54,14 @@ export default function Home() {
     {
       id: 2,
       name: "Prabu Rao",
-      role: "Co-Founder",
+      role: "CEO & Co-Founder",
       img: team1,
       bio: "Prabu specializes in high-performance architecture and system design.",
     },
     {
       id: 3,
       name: "Nithyanantham",
-      role: "Co-Founder",
+      role: "COO & Co-Founder",
       img: team3,
       bio: "Nithy blends creativity and engineering to create powerful solutions.",
     },
