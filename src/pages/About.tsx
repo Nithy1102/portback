@@ -3,8 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 
 /* TEAM IMAGES */
-import team1 from "/prabu.jpeg";
-import team2 from "/agar.jpeg";
+import team1 from "/rao.jpeg";
+import team2 from "/agaran.jpeg";
 import team3 from "/nithy.jpeg";
 
 /* ================= MOBILE DETECTOR ================= */

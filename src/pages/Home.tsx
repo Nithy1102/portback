@@ -8,7 +8,7 @@ import LiquidChrome from "../components/LiquidEther";
 import ServicesCarousel from "../components/ServicesCarousel";
 
 import team1 from "/rao.jpeg";
-import team2 from "/agar.jpeg";
+import team2 from "/agaran.jpeg";
 import team3 from "/nithy.jpeg";
 
 /* ================= MOBILE DETECTOR ================= */
