@@ -1,6 +1,17 @@
 import { useEffect } from "react";
 
 export default function PixelLoader({ onComplete }) {
+  const hasVisited =
+  typeof window !== "undefined" &&
+  sessionStorage.getItem("pixelLoaderDone");
+
+const isTouch =
+  typeof window !== "undefined" &&
+  ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  if (hasVisited || isTouch) {
+  if (typeof onComplete === "function") onComplete();
+  return null;
+}
   useEffect(() => {
     const img = new Image();
     img.src = "/favicon.png";
@@ -85,10 +96,11 @@ export default function PixelLoader({ onComplete }) {
       setTimeout(backToLogo, 5400);
 
       setTimeout(() => {
-        if (typeof onComplete === "function") {
-          onComplete();
-        }
-      }, 7600);
+  sessionStorage.setItem("pixelLoaderDone", "true");
+  if (typeof onComplete === "function") {
+    onComplete();
+  }
+}, 7600);
     };
   }, [onComplete]); // <-- useEffect closes here ✔
 

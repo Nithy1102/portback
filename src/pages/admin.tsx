@@ -9,11 +9,7 @@ import {
   Image as ImageIcon,
   Link as LinkIcon,
 } from "lucide-react";
-
-/* ================= API CONFIG ================= */
-const AUTH_API = "https://port-pp3k.onrender.com/api/admin";
-const PROJECT_API = "https://port-pp3k.onrender.com/api/projects";
-const IMAGE_BASE = "https://port-pp3k.onrender.com/api/uploads";
+import { supabase } from "@/lib/supabase"; 
 
 /* ================= ANIMATION ================= */
 const fadeIn = {
@@ -27,7 +23,7 @@ const fadeIn = {
 
 /* ================= TYPES ================= */
 type Project = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   link: string;
@@ -36,9 +32,7 @@ type Project = {
 
 export default function Admin() {
   /* ================= AUTH ================= */
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("admin_token")
-  );
+ const [session, setSession] = useState<any>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -47,7 +41,7 @@ export default function Admin() {
 
   /* ================= PROJECTS ================= */
   const [projects, setProjects] = useState<Project[]>([]);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
@@ -56,106 +50,109 @@ export default function Admin() {
 
   /* ================= AUTH CHECK ================= */
   useEffect(() => {
-    if (!token) {
-      setLoading(false);
-      return;
-    }
-
-    fetch(`${AUTH_API}/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        setLoading(false);
-      })
-      .catch(() => {
-        logout();
-        setLoading(false);
-      });
-  }, [token]);
-
+  const getSession = async () => {
+    const { data } = await supabase.auth.getSession();
+    setSession(data.session);
+    setLoading(false);
+  };
+  getSession();
+}, []);
+/* ================= AUTO LOGOUT ON PAGE LEAVE ================= */
+useEffect(() => {
+  return () => {
+    supabase.auth.signOut();
+  };
+}, []);
   /* ================= LOAD PROJECTS ================= */
-  useEffect(() => {
-    if (!token) return;
+ useEffect(() => {
+  const loadProjects = async () => {
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*");
 
-    fetch(PROJECT_API)
-      .then((res) => res.json())
-      .then(setProjects)
-      .catch(console.error);
-  }, [token]);
-
+    if (!error && data) setProjects(data);
+  };
+  loadProjects();
+}, [session]);
   /* ================= LOGIN ================= */
   const login = async () => {
-    const res = await fetch(`${AUTH_API}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email.trim(), password }),
-    });
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.trim(),
+    password,
+  });
 
-    const data = await res.json();
-    if (!res.ok) return alert("Invalid credentials");
-
-    localStorage.setItem("admin_token", data.token);
-    setToken(data.token);
-  };
+  if (error) alert(error.message);
+  else {
+    const { data } = await supabase.auth.getSession();
+    setSession(data.session);
+  }
+};
 
   /* ================= LOGOUT ================= */
-  const logout = () => {
-    localStorage.removeItem("admin_token");
-    setToken(null);
-  };
-
+  const logout = async () => {
+  await supabase.auth.signOut();
+  setSession(null);
+};
   /* ================= ADD / UPDATE ================= */
-  const saveProject = async () => {
-    if (!title || !description || !link) {
-      alert("Title, description & link required");
-      return;
-    }
+const saveProject = async () => {
+  if (!title || !description || !link) {
+    alert("Title, description & link required");
+    return;
+  }
 
-    const form = new FormData();
-    form.append("title", title);
-    form.append("description", description);
-    form.append("link", link);
-    if (image) form.append("image", image);
+  let imageUrl = preview;
 
-    const url = editingId
-      ? `${PROJECT_API}/${editingId}`
-      : PROJECT_API;
+  if (image) {
+    const fileName = `${Date.now()}-${image.name}`;
+    const { error } = await supabase.storage
+      .from("Portfolio")
+      .upload(fileName, image);
+    const { data } = supabase.storage
+      .from("Portfolio")
+      .getPublicUrl(fileName);
+    console.log("UPLOAD RESULT:", data, error);
 
-    const method = editingId ? "PUT" : "POST";
+if (error) {
+  alert(error.message);
+  return;
+}
 
-    const res = await fetch(url, {
-      method,
-      headers: { Authorization: `Bearer ${token}` },
-      body: form,
-    });
+    imageUrl = data.publicUrl;
+  }
 
-    if (!res.ok) return alert("Failed to save project");
+  const payload = { title, description, link, image: imageUrl };
+  
+  if (editingId) {
+    const { data, error } = await supabase
+  .from("projects")
+  .update(payload)
+  .eq("id", editingId)
+  .select();
 
-    resetForm();
-    const refreshed = await fetch(PROJECT_API).then((r) => r.json());
-    setProjects(refreshed);
-  };
+console.log("UPDATE RESULT:", data, error);
+  } else {
+    const { error } = await supabase.from("projects").insert(payload);
+console.log(error);
+  }
 
-
+  resetForm();
+  const { data } = await supabase.from("projects").select("*");
+  setProjects(data || []);
+};
   const editProject = (p: Project) => {
     setEditingId(p.id);
     setTitle(p.title);
     setDescription(p.description);
     setLink(p.link);
-    setPreview(p.image ? `${IMAGE_BASE}/${p.image}` : null);
+    setPreview(p.image ?? null);
     setImage(null);
   };
 
 
-  const deleteProject = async (id: number) => {
+  const deleteProject = async (id: string) => {
     if (!confirm("Delete this project?")) return;
 
-    await fetch(`${PROJECT_API}/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
+    await supabase.from("projects").delete().eq("id", id);
     setProjects((prev) => prev.filter((p) => p.id !== id));
   };
 
@@ -181,7 +178,7 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background text-white flex items-center justify-center px-6">
       <AnimatePresence mode="wait">
-        {!token ? (
+        {!session ? (
           /* ================= LOGIN ================= */
           <motion.div
             variants={fadeIn}
@@ -221,7 +218,7 @@ export default function Admin() {
             initial="hidden"
             animate="visible"
             className="glass-card neon-purple neon-purple-hover
-                       w-full max-w-6xl p-10 rounded-2xl"
+                       w-full max-w-6xl p-10 rounded-2xl mt-24"
           >
             <div className="flex justify-between mb-10">
               <h1 className="text-4xl font-black uppercase">
@@ -302,7 +299,7 @@ export default function Admin() {
                 >
                   {p.image && (
                     <img
-                      src={`${IMAGE_BASE}/${p.image}`}
+                      src={p.image}
                       className="w-full h-40 object-cover rounded-xl mb-4"
                     />
                   )}

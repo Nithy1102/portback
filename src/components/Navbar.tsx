@@ -7,7 +7,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
-
+  const isAdminPage = location === "/admin";
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -87,13 +87,17 @@ export default function Navbar() {
               </Link>
             )
           )}
-
-          <Link
-            href="/contact"
-            className="px-6 py-2 border border-primary text-primary hover:bg-primary hover:text-white transition-all font-orbitron text-xs tracking-widest uppercase rounded-sm cursor-pointer"
-          >
-            Start Project
-          </Link>
+        <Link
+  href="/contact"
+  className={`px-6 py-2 border border-primary text-primary 
+  hover:bg-primary hover:text-white transition-all 
+  font-orbitron text-xs tracking-widest uppercase 
+  rounded-sm cursor-pointer
+  ${isAdminPage ? "opacity-0 pointer-events-none" : ""}
+  `}
+>
+  Start Project
+</Link>
         </div>
 
         {/* Mobile Toggle */}

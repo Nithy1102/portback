@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-/* ================= API ================= */
-const PROJECT_API = "https://port-pp3k.onrender.com/api/projects";
-const IMAGE_BASE = "https://port-pp3k.onrender.com/api/uploads";
 
 /* ================= TYPES ================= */
 type Project = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   link: string;
@@ -19,12 +17,18 @@ export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selected, setSelected] = useState<Project | null>(null);
 
-  useEffect(() => {
-    fetch(PROJECT_API)
-      .then((res) => res.json())
-      .then(setProjects)
-      .catch(console.error);
-  }, []);
+ useEffect(() => {
+  const loadProjects = async () => {
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*");
+
+    if (error) console.error(error);
+    else setProjects(data || []);
+  };
+
+  loadProjects();
+}, []);
 
   return (
     <div className="min-h-screen bg-background pt-32 pb-20 px-6">
@@ -55,7 +59,7 @@ export default function Portfolio() {
               {/* IMAGE */}
               {project.image && (
                 <img
-                  src={`${IMAGE_BASE}/${project.image}`}
+                  src={project.image}
                   alt={project.title}
                   className="absolute inset-0 w-full h-full object-cover
                              group-hover:scale-110 transition-transform duration-500"
@@ -112,7 +116,7 @@ export default function Portfolio() {
               {/* IMAGE */}
               {selected.image && (
                 <img
-                  src={`${IMAGE_BASE}/${selected.image}`}
+                  src={selected.image}
                   className="w-full h-64 object-cover rounded-xl mb-6"
                 />
               )}

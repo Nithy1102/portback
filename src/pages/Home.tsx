@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, X, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
+import { supabase } from "@/lib/supabase"; 
 
 import LiquidChrome from "../components/LiquidEther";
 import ServicesCarousel from "../components/ServicesCarousel";
@@ -24,13 +25,10 @@ function useIsMobile() {
   return isMobile;
 }
 
-/* ================= API ================= */
-const PROJECT_API = "https://port-pp3k.onrender.com/api/projects";
-const IMAGE_BASE = "https://port-pp3k.onrender.com/api/uploads";
 
 /* ================= TYPES ================= */
 type Project = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   link: string;
@@ -73,12 +71,18 @@ export default function Home() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  useEffect(() => {
-    fetch(PROJECT_API)
-      .then((res) => res.json())
-      .then(setProjects)
-      .catch(console.error);
-  }, []);
+ useEffect(() => {
+  const loadProjects = async () => {
+    const { data, error } = await supabase
+      .from("projects")
+      .select("*");
+
+    if (error) console.error(error);
+    else setProjects(data || []);
+  };
+
+  loadProjects();
+}, []);
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -293,7 +297,7 @@ export default function Home() {
               >
                 {p.image && (
                   <img
-                    src={`${IMAGE_BASE}/${p.image}`}
+                    src={p.image}
                     className="absolute inset-0 w-full h-full object-cover"
                   />
                 )}
@@ -333,7 +337,7 @@ export default function Home() {
 
               {selectedProject.image && (
                 <img
-                  src={`${IMAGE_BASE}/${selectedProject.image}`}
+                  src={selectedProject.image}
                   className="w-full h-48 sm:h-64 object-cover rounded-xl mb-6"
                 />
               )}

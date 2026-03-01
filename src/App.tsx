@@ -1,6 +1,7 @@
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+import ComingSoon from "./pages/Comingsoon";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/footer";
@@ -71,7 +72,7 @@ function App() {
               <Route path="/portfolio" component={Portfolio} />
               <Route path="/contact" component={Contact} />
               <Route path="/admin" component={admin} />
-              <Route component={NotFound} />
+              <Route component={ComingSoon} />
             </Switch>
 
             <Toaster />
